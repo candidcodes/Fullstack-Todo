@@ -1,0 +1,90 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+
+const LoginForm = () => {
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      console.log('User:', user);
+      navigate('/')
+      
+    } catch (error) {
+      // Log the specific error code and message
+      console.error('Error Code:', error.code);
+      console.error('Error Message:', error.message);
+    }
+  
+    console.log("Login Data Submitted:", formData);
+  };
+  
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-900 text-gray-200">
+      <div className="w-full max-w-md bg-gray-800 p-6 rounded-2xl shadow-lg">
+        <h2 className="text-2xl font-bold text-center text-gray-100 mb-6">
+          Login
+        </h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-600 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Your Email"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-600 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Your Password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+          >
+            Login
+          </button>
+        </form>
+        <p className="mt-4 text-sm text-center text-gray-400">
+          Don't have an account?{" "}
+          <a href="/signup" className="text-blue-400 hover:underline">
+            Sign up here
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;
